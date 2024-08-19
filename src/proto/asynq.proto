@@ -9,8 +9,8 @@ import "google/protobuf/timestamp.proto";
 
 option go_package = "github.com/hibiken/asynq/internal/proto";
 
-option php_namespace = "Wuwuseo\\HibikenAsynqClient";
-option php_metadata_namespace = "Wuwuseo\\HibikenAsynqClient\\metadata";
+option php_namespace = "HyssaDev\\HibikenAsynqClient";
+option php_metadata_namespace = "HyssaDev\\HibikenAsynqClient\\metadata";
 
 // TaskMessage is the internal representation of a task with additional
 // metadata fields.

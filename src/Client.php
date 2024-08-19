@@ -1,5 +1,5 @@
 <?php
-namespace Wuwuseo\HibikenAsynqClient;
+namespace HyssaDev\HibikenAsynqClient;
 
 use Illuminate\Support\Facades\Redis;
 use Ramsey\Uuid\Uuid;

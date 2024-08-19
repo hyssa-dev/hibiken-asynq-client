@@ -18,7 +18,7 @@ https://github.com/hibiken/asynq
 
 ## install
 
-composer require wuwuseo/hibiken-asynq-client:dev-main
+composer require hyssa-dev/hibiken-asynq-client:dev-main
 
 ## used
 
@@ -27,10 +27,10 @@ composer require wuwuseo/hibiken-asynq-client:dev-main
  example
 
 ```php
-namespace Wuwuseo\HibikenAsynqClient\Tests;
+namespace HyssaDev\HibikenAsynqClient\Tests;
 
 use Ramsey\Uuid\Uuid;
-use Wuwuseo\HibikenAsynqClient\Client;
+use HyssaDev\HibikenAsynqClient\Client;
 
 class ClientTest extends \PHPUnit\Framework\TestCase
 {
