@@ -7,7 +7,7 @@
         "predis/predis": "^2.2",
         "google/protobuf": "^3.24",
         "ramsey/uuid": "^4.7",
-        "illuminate/redis": "^11.20"
+        "illuminate/redis": "*"
     },
     "license": "MIT",
     "autoload": {
