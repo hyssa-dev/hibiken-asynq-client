@@ -1,6 +1,7 @@
 <?php
 namespace Wuwuseo\HibikenAsynqClient;
 
+use Illuminate\Support\Facades\Redis;
 use Ramsey\Uuid\Uuid;
 
 Class Client
@@ -16,7 +17,7 @@ Class Client
 
     protected int $defaultMaxRetry = 25;
 
-    public function __construct(\Redis $redis)
+    public function __construct(Redis $redis)
     {
         $this->broker = new Rdb($redis);
     }

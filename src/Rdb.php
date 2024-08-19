@@ -2,13 +2,15 @@
 
 namespace Wuwuseo\HibikenAsynqClient;
 
+use Illuminate\Support\Facades\Redis;
+
 class Rdb
 {
-    protected \Redis $redis;
+    protected Redis $redis;
 
-    public function __construct(\Redis $redis)
+    public function __construct(Redis $redis)
     {
-        $this->redis = $redis;
+        $this->redis = $redis;  
     }
 
     protected string $QueuesKey = "asynq:queues";
@@ -69,128 +71,128 @@ class Rdb
     public function Enqueue(TaskMessage $data)
     {
 
-        $this->redis->sAdd($this->QueuesKey, $data->getQueue());
-        if ($this->redis->exists($this->TaskKey($data->getQueue(), $data->getId())) > 0) {
+        $this->redis::sAdd($this->QueuesKey, $data->getQueue());
+        if ($this->redis::exists($this->TaskKey($data->getQueue(), $data->getId())) > 0) {
             return 0;
         }
-        $this->redis->multi();
+        $this->redis::multi();
         $encoded = $data->serializeToString();
-        $this->redis->hMSet($this->TaskKey($data->getQueue(), $data->getId()), [
+        $this->redis::hMSet($this->TaskKey($data->getQueue(), $data->getId()), [
             'msg'           => $encoded,
             'state'         => 'pending',
             'pending_since' => $this->nanoseconds(),
         ]);
-        $this->redis->lPush($this->PendingKey($data->getQueue()), $data->getId());
-        $this->redis->exec();
+        $this->redis::lPush($this->PendingKey($data->getQueue()), $data->getId());
+        $this->redis::exec();
         return true;
     }
 
     public function EnqueueUnique(TaskMessage $data, int $ttl)
     {
 
-        $this->redis->sAdd($this->QueuesKey, $data->getQueue());
-        if ($this->redis->set($data->getUniqueKey(), $data->getId(), ['NX', 'EX' => $ttl]) !== true) {
+        $this->redis::sAdd($this->QueuesKey, $data->getQueue());
+        if ($this->redis::set($data->getUniqueKey(), $data->getId(), ['NX', 'EX' => $ttl]) !== true) {
             return -1;
         }
-        if ($this->redis->exists($this->TaskKey($data->getQueue(), $data->getId())) > 0) {
+        if ($this->redis::exists($this->TaskKey($data->getQueue(), $data->getId())) > 0) {
             return 0;
         }
-        $this->redis->multi();
+        $this->redis::multi();
         $encoded = $data->serializeToString();
-        $this->redis->hMSet($this->TaskKey($data->getQueue(), $data->getId()), [
+        $this->redis::hMSet($this->TaskKey($data->getQueue(), $data->getId()), [
             'msg'           => $encoded,
             'state'         => 'pending',
             'pending_since' => $this->nanoseconds(),
             'unique_key'    => $data->getUniqueKey(),
         ]);
-        $this->redis->lPush($this->PendingKey($data->getQueue()), $data->getId());
-        $this->redis->exec();
+        $this->redis::lPush($this->PendingKey($data->getQueue()), $data->getId());
+        $this->redis::exec();
         return true;
     }
 
     public function Schedule(TaskMessage $data, int $processAt)
     {
 
-        $this->redis->sAdd($this->QueuesKey, $data->getQueue());
-        if ($this->redis->exists($this->TaskKey($data->getQueue(), $data->getId())) > 0) {
+        $this->redis::sAdd($this->QueuesKey, $data->getQueue());
+        if ($this->redis::exists($this->TaskKey($data->getQueue(), $data->getId())) > 0) {
             return 0;
         }
-        $this->redis->multi();
+        $this->redis::multi();
         $encoded = $data->serializeToString();
-        $this->redis->hMSet($this->TaskKey($data->getQueue(), $data->getId()), [
+        $this->redis::hMSet($this->TaskKey($data->getQueue(), $data->getId()), [
             'msg'   => $encoded,
             'state' => 'scheduled',
         ]);
-        $this->redis->zAdd($this->ScheduledKey($data->getQueue()), $processAt, $data->getId());
-        $this->redis->exec();
+        $this->redis::zAdd($this->ScheduledKey($data->getQueue()), $processAt, $data->getId());
+        $this->redis::exec();
         return true;
     }
 
     public function ScheduleUnique(TaskMessage $data, int $processAt, int $ttl)
     {
 
-        $this->redis->sAdd($this->QueuesKey, $data->getQueue());
-        if ($this->redis->set($data->getUniqueKey(), $data->getId(), ['NX', 'EX' => $ttl]) !== true) {
+        $this->redis::sAdd($this->QueuesKey, $data->getQueue());
+        if ($this->redis::set($data->getUniqueKey(), $data->getId(), ['NX', 'EX' => $ttl]) !== true) {
             return -1;
         }
 
-        if ($this->redis->exists($this->TaskKey($data->getQueue(), $data->getId())) > 0) {
+        if ($this->redis::exists($this->TaskKey($data->getQueue(), $data->getId())) > 0) {
             return 0;
         }
-        $this->redis->multi();
+        $this->redis::multi();
         $encoded = $data->serializeToString();
-        $this->redis->hMSet($this->TaskKey($data->getQueue(), $data->getId()), [
+        $this->redis::hMSet($this->TaskKey($data->getQueue(), $data->getId()), [
             'msg'        => $encoded,
             'state'      => 'scheduled',
             'unique_key' => $data->getUniqueKey(),
         ]);
-        $this->redis->zAdd($this->ScheduledKey($data->getQueue()), $processAt, $data->getId());
-        $this->redis->exec();
+        $this->redis::zAdd($this->ScheduledKey($data->getQueue()), $processAt, $data->getId());
+        $this->redis::exec();
         return true;
     }
 
     public function AddToGroup(TaskMessage $data,string $groupKey)
     {
 
-        $this->redis->sAdd($this->QueuesKey, $data->getQueue());
-        if ($this->redis->exists($this->TaskKey($data->getQueue(), $data->getId())) > 0) {
+        $this->redis::sAdd($this->QueuesKey, $data->getQueue());
+        if ($this->redis::exists($this->TaskKey($data->getQueue(), $data->getId())) > 0) {
             return 0;
         }
-        $this->redis->multi();
+        $this->redis::multi();
         $encoded = $data->serializeToString();
-        $this->redis->hMSet($this->TaskKey($data->getQueue(), $data->getId()), [
+        $this->redis::hMSet($this->TaskKey($data->getQueue(), $data->getId()), [
             'msg'   => $encoded,
             'state' => 'aggregating',
             'group' => $groupKey
         ]);
         $time = time();
-        $this->redis->zAdd($this->GroupKey($data->getQueue(),$groupKey), $time, $data->getId());
-        $this->redis->sAdd($this->AllGroups($data->getQueue()),$groupKey);
-        $this->redis->exec();
+        $this->redis::zAdd($this->GroupKey($data->getQueue(),$groupKey), $time, $data->getId());
+        $this->redis::sAdd($this->AllGroups($data->getQueue()),$groupKey);
+        $this->redis::exec();
         return true;
     }
 
     public function AddToGroupUnique(TaskMessage $data,string $groupKey,int $ttl)
     {
-        $this->redis->sAdd($this->QueuesKey, $data->getQueue());
+        $this->redis::sAdd($this->QueuesKey, $data->getQueue());
         $unique = $this->UniqueKey($data->getQueue(),$data->getType(),$data->getPayload());
-        if ($this->redis->set($unique, $data->getId(), ['NX', 'EX' => $ttl]) !== true) {
+        if ($this->redis::set($unique, $data->getId(), ['NX', 'EX' => $ttl]) !== true) {
             return -1;
         }
-        if ($this->redis->exists($this->TaskKey($data->getQueue(), $data->getId())) > 0) {
+        if ($this->redis::exists($this->TaskKey($data->getQueue(), $data->getId())) > 0) {
             return 0;
         }
-        $this->redis->multi();
+        $this->redis::multi();
         $encoded = $data->serializeToString();
-        $this->redis->hMSet($this->TaskKey($data->getQueue(), $data->getId()), [
+        $this->redis::hMSet($this->TaskKey($data->getQueue(), $data->getId()), [
             'msg'   => $encoded,
             'state' => 'aggregating',
             'group' => $groupKey
         ]);
         $time = time();
-        $this->redis->zAdd($this->GroupKey($data->getQueue(),$groupKey), $time, $data->getId());
-        $this->redis->sAdd($this->AllGroups($data->getQueue()),$groupKey);
-        $this->redis->exec();
+        $this->redis::zAdd($this->GroupKey($data->getQueue(),$groupKey), $time, $data->getId());
+        $this->redis::sAdd($this->AllGroups($data->getQueue()),$groupKey);
+        $this->redis::exec();
         return true;
     }
 }

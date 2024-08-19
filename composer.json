@@ -6,7 +6,8 @@
         "php": "^8.1",
         "ext-redis": "^5.3",
         "google/protobuf": "^3.24",
-        "ramsey/uuid": "^4.7"
+        "ramsey/uuid": "^4.7",
+        "illuminate/redis": "^11.20"
     },
     "license": "MIT",
     "autoload": {
